@@ -16,7 +16,9 @@ with st.form(key="my_form"):
     text = st.text_area("Say something")
     submit_text = st.form_submit_button(label='Submit')
 if submit_text:
-    predicted_label = model.predict([text])
+    predicted_probabilities = model.predict([text])
+    predicted_label = np.argmax(predicted_probabilities, axis=1)[0]
+    
     label_to_emotion = {
         0: "Sadness",
         1: "Joy",
@@ -25,7 +27,8 @@ if submit_text:
         4: "Fear",
         5: "Surprise"
     }
-    predicted_emotion = label_to_emotion[predicted_label[0]]
+    
+    predicted_emotion = label_to_emotion[predicted_label]
     st.write("Emotion: ", predicted_emotion)
 
     if predicted_emotion in emotion_images:
