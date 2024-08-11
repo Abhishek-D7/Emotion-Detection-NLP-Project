@@ -24,10 +24,43 @@ y_train = train['label']
 X_test = train['text']
 y_test = train['label']
 
-model = Pipeline(steps=[('cv', CountVectorizer()), ('rf', RandomForestClassifier())])
-# Train and evaluate model
-model.fit(X_train, y_train)
+# Parameters
+max_features = 10000
+sequence_length = 100
+
+# Text Vectorization Layer
+vectorize_layer = TextVectorization(
+    max_tokens=max_features,
+    output_mode='int',
+    output_sequence_length=sequence_length
+)
+
+# Adapt the layer to the text data
+vectorize_layer.adapt(X_train.values)
+
+# Define the Neural Network Model
+model = Sequential([
+    vectorize_layer,
+    Embedding(max_features + 1, 128),
+    GlobalAveragePooling1D(),
+    Dense(128, activation='relu'),
+    Dropout(0.5),
+    Dense(64, activation='relu'),
+    Dropout(0.5),
+    Dense(len(y_train.unique()), activation='softmax')  # Multi-class classification
+])
+
+# Compile the model
+model.compile(loss='sparse_categorical_crossentropy',
+              optimizer='adam',
+              metrics=['accuracy'])
+
+# Train the model
+model.fit(X_train, y_train, epochs=10, validation_data=(X_test, y_test))
+
+# Predict and evaluate
 y_preds = model.predict(X_test)
+y_preds = y_preds.argmax(axis=1)  # Get the class with the highest probability
 acc_score = accuracy_score(y_test, y_preds)
 print("Accuracy: ", acc_score)
 
