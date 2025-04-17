@@ -1,7 +1,7 @@
 import pandas as pd
-from sklearn.pipeline import Pipeline
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.ensemble import RandomForestClassifier
+import tensorflow as tf
+from tensorflow.keras.layers import TextVectorization, Dense, Dropout, Embedding, GlobalAveragePooling1D
+from tensorflow.keras.models import Sequential
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 test2 = pd.read_csv(r"D:\Data Sets\NLP\Emotion Detection NLP\test2.csv")
